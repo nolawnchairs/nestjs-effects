@@ -28,22 +28,24 @@ export class EffectsInterceptor implements NestInterceptor {
           if (effects.length) {
             const { params, path, url, query, headers, body } = request
             for (const effect of effects) {
-              this.emitter.emitAsync(
-                effect,
-                new DispatchedEffectEvent(result, {
-                  params,
-                  path,
-                  url,
-                  query,
-                  headers,
-                  body,
-                })
-              ).catch((error) => {
+              try {
+                this.emitter.emit(
+                  effect,
+                  new DispatchedEffectEvent(result, {
+                    params,
+                    path,
+                    url,
+                    query,
+                    headers,
+                    body,
+                  })
+                )
+              } catch (e) {
                 if (this.options.logErrors) {
-                  const message = `An error occurred in the event handler for effect '${effect}': ${error.message}`
+                  const message = `An error occurred in the event handler for effect '${effect}': ${(e as Error).message}`
                   this.logger.error(message)
                 }
-              })
+              }
             }
           }
         })
