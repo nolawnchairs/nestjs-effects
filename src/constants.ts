@@ -1,0 +1,3 @@
+
+export const DISPATCH_EFFECT = Symbol('DISPATCH_EFFECT')
+export const EFFECTS_MODULE_OPTIONS = Symbol('EFFECTS_MODULE_OPTIONS')

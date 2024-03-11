@@ -1,0 +1,6 @@
+src
+test
+CHANGELOG.md
+.eslintrc.cjs
+ts*.json
+*.js.map
