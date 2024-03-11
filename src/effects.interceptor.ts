@@ -1,6 +1,6 @@
 
 import { Request } from 'express'
-import { Observable, catchError, tap } from 'rxjs'
+import { Observable, tap } from 'rxjs'
 import { DISPATCH_EFFECT, EFFECTS_MODULE_OPTIONS } from './constants'
 import { DispatchedEffectEvent } from './dispatched-effect.event'
 import { IEffectModuleOptions } from './effects.module'
@@ -28,7 +28,7 @@ export class EffectsInterceptor implements NestInterceptor {
           if (effects.length) {
             const { params, path, url, query, headers, body } = request
             for (const effect of effects) {
-              this.emitter.emit(
+              this.emitter.emitAsync(
                 effect,
                 new DispatchedEffectEvent(result, {
                   params,
@@ -38,17 +38,14 @@ export class EffectsInterceptor implements NestInterceptor {
                   headers,
                   body,
                 })
-              )
+              ).catch((error) => {
+                if (this.options.logErrors) {
+                  const message = `An error occurred in the event handler for effect '${effect}': ${error.message}`
+                  this.logger.error(message)
+                }
+              })
             }
           }
-        }),
-        catchError((error, input) => {
-          if (this.options.logErrors) {
-            const message = 'An error occurred in the event handlers for effects '
-              + `[${effects.join(', ')}]: ${error.message}`
-            this.logger.error(message)
-          }
-          return input
         })
       )
   }
