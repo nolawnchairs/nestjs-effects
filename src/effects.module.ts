@@ -34,6 +34,7 @@ export class EffectsModule {
       ],
       exports: [
         EffectsInterceptor,
+        EFFECTS_MODULE_OPTIONS,
       ],
     }
   }
