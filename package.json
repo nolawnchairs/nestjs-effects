@@ -1,6 +1,6 @@
 {
   "name": "@knightinteractive/effects-nestjs",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "keywords": [],
   "description": "NestJS module for controller-based effect dispatching",
   "main": "lib/index.js",
