@@ -1,6 +1,11 @@
 src
 test
+mock
 CHANGELOG.md
 .eslintrc.cjs
 ts*.json
 *.js.map
+.github
+.gitignore
+.tsconfig.json
+.tsconfig.lint.json
