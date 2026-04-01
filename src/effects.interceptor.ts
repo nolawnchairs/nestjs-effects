@@ -1,5 +1,4 @@
 
-import { Request } from 'express'
 import { Observable, tap } from 'rxjs'
 import { DISPATCH_EFFECT, EFFECTS_MODULE_OPTIONS } from './constants'
 import { DispatchedEffectEvent } from './dispatched-effect.event'
@@ -21,29 +20,24 @@ export class EffectsInterceptor implements NestInterceptor {
 
   intercept(context: ExecutionContext, next: CallHandler<any>): Observable<any> {
     const effects = this.reflector.get<string[]>(DISPATCH_EFFECT, context.getHandler()) ?? []
-    const request = context.switchToHttp().getRequest<Request>()
+    const request = context.switchToHttp().getRequest()
     return next.handle()
       .pipe(
         tap((result) => {
           if (effects.length) {
-            const { params, path, url, query, headers, body } = request
             for (const effect of effects) {
               try {
                 this.emitter.emit(
                   effect,
-                  new DispatchedEffectEvent(result, {
-                    params,
-                    path,
-                    url,
-                    query,
-                    headers,
-                    body,
-                  })
+                  new DispatchedEffectEvent(result, request)
                 )
               } catch (e) {
                 if (this.options.logErrors) {
                   const message = `An error occurred in the event handler for effect '${effect}': ${(e as Error).message}`
                   this.logger.error(message)
+                }
+                if (this.options.throwErrors) {
+                  throw e
                 }
               }
             }
